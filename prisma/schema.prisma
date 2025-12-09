@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Status {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum Cycle {
+  MONTHLY
+  YEARLY
+}
+
+enum TxType {
+  INCOME
+  EXPENSE
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?   @db.Text
+  dueDate     DateTime?
+  priority    Priority  @default(MEDIUM)
+  status      Status    @default(TODO)
+  tags        String?   // Store as comma-separated string or JSON
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Reminder {
+  id          Int      @id @default(autoincrement())
+  title       String
+  dateTime    DateTime
+  isRecurring Boolean  @default(false)
+  isCompleted Boolean  @default(false)
+}
+
+model Subscription {
+  id              Int      @id @default(autoincrement())
+  name            String
+  price           Decimal  @db.Decimal(10, 2)
+  billingCycle    Cycle
+  nextBillingDate DateTime
+  isActive        Boolean  @default(true)
+  notes           String?
+}
+
+model Account {
+  id             Int           @id @default(autoincrement())
+  name           String
+  initialBalance Decimal       @db.Decimal(15, 2) @default(0)
+  color          String?
+  description    String?
+  isPrimary      Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  transactions   Transaction[]
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  amount      Decimal  @db.Decimal(10, 2)
+  type        TxType
+  category    String
+  description String?
+  date        DateTime @default(now())
+  accountId   Int?
+  account     Account? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+}

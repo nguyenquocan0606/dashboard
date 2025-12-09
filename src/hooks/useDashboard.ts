@@ -1,0 +1,13 @@
+import useSWR from 'swr';
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+export function useDashboard() {
+    const { data, error, isLoading } = useSWR('/api/dashboard', fetcher);
+
+    return {
+        stats: data,
+        isLoading,
+        isError: error,
+    };
+}

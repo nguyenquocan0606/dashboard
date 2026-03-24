@@ -53,14 +53,15 @@ export default function SettingsPage() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                             {accounts.map((acc: any) => (
                                 <button
                                     key={acc.id}
                                     onClick={() => handleSetPrimary(acc.id)}
                                     disabled={saving}
                                     className={`relative p-4 rounded-lg border-2 transition-all text-left ${primaryAccount?.id === acc.id
-                                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                                         }`}
                                 >
                                     {primaryAccount?.id === acc.id && (

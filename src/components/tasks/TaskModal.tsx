@@ -6,10 +6,13 @@ import { mutate } from 'swr';
 interface TaskModalProps {
     isOpen: boolean;
     onClose: () => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     task?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    stacks?: any[];
 }
 
-export default function TaskModal({ isOpen, onClose, task }: TaskModalProps) {
+export default function TaskModal({ isOpen, onClose, task, stacks = [] }: TaskModalProps) {
     const [formData, setFormData] = useState({
         title: task?.title || '',
         description: task?.description || '',
@@ -17,6 +20,7 @@ export default function TaskModal({ isOpen, onClose, task }: TaskModalProps) {
         priority: task?.priority || 'MEDIUM',
         status: task?.status || 'TODO',
         tags: task?.tags || '',
+        stackId: task?.stackId || null,
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -142,6 +146,26 @@ export default function TaskModal({ isOpen, onClose, task }: TaskModalProps) {
                                 <option value="DONE">Done</option>
                             </select>
                         </div>
+                    </div>
+
+                    {/* Stack */}
+                    <div>
+                        <label htmlFor="stack" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Stack
+                        </label>
+                        <select
+                            id="stack"
+                            value={formData.stackId || ''}
+                            onChange={(e) => setFormData({ ...formData, stackId: e.target.value ? parseInt(e.target.value) : null })}
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
+                            <option value="">Unassigned</option>
+                            {stacks.map((stack: { id: number; name: string }) => (
+                                <option key={stack.id} value={stack.id}>
+                                    {stack.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     {/* Tags */}

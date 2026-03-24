@@ -24,9 +24,9 @@ export async function PATCH(
             return NextResponse.json({ error: validation.error.issues }, { status: 400 });
         }
 
-        const subscription = await financeService.updateSubscription(id, validation.data as any);
+        const subscription = await financeService.updateSubscription(id, validation.data as Parameters<typeof financeService.updateSubscription>[1]);
         return NextResponse.json(subscription);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to update subscription' }, { status: 500 });
     }
 }
@@ -39,7 +39,7 @@ export async function DELETE(
         const id = parseInt(params.id);
         await financeService.deleteSubscription(id);
         return NextResponse.json({ success: true });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to delete subscription' }, { status: 500 });
     }
 }

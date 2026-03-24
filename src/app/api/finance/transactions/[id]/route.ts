@@ -9,7 +9,7 @@ export async function DELETE(
         const id = parseInt(params.id);
         await financeService.deleteTransaction(id);
         return NextResponse.json({ success: true });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to delete transaction' }, { status: 500 });
     }
 }

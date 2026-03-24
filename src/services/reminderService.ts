@@ -19,6 +19,7 @@ export const reminderService = {
         dateTime: Date;
         isRecurring?: boolean;
         isCompleted?: boolean;
+        color?: string;
     }) {
         return await prisma.reminder.create({
             data,

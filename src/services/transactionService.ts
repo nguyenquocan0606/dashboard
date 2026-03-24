@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { Transaction, TxType } from '@prisma/client';
+import { TxType } from '@prisma/client';
 
 export const transactionService = {
     async getAllTransactions() {

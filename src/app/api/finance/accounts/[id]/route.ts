@@ -22,7 +22,7 @@ export async function GET(
         }
 
         return NextResponse.json(summary);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch account' }, { status: 500 });
     }
 }
@@ -42,7 +42,7 @@ export async function PUT(
 
         const account = await accountService.updateAccount(id, validation.data);
         return NextResponse.json(account);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to update account' }, { status: 500 });
     }
 }
@@ -55,7 +55,7 @@ export async function DELETE(
         const id = parseInt(params.id);
         await accountService.deleteAccount(id);
         return NextResponse.json({ success: true });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to delete account' }, { status: 500 });
     }
 }

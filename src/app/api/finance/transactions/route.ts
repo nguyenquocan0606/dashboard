@@ -29,7 +29,7 @@ export async function GET(request: Request) {
         }
         const transactions = await financeService.getTransactions(accountId);
         return NextResponse.json(transactions);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch transactions' }, { status: 500 });
     }
 }
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
         const transaction = await financeService.createTransaction(validation.data);
         return NextResponse.json(transaction, { status: 201 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to create transaction' }, { status: 500 });
     }
 }

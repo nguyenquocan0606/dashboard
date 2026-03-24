@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -30,16 +31,28 @@ enum TxType {
   EXPENSE
 }
 
+model TaskStack {
+  id        Int      @id @default(autoincrement())
+  name      String
+  order     Int      // For ordering stacks
+  color     String?  @default("#64748b")
+  createdAt DateTime @default(now())
+  tasks     Task[]
+}
+
 model Task {
-  id          Int       @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   title       String
-  description String?   @db.Text
-  dueDate     DateTime?
-  priority    Priority  @default(MEDIUM)
-  status      Status    @default(TODO)
-  tags        String?   // Store as comma-separated string or JSON
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  description String?    @db.Text
+  dueDate     DateTime?  // NOW OPTIONAL
+  priority    Priority   @default(MEDIUM)
+  status      Status     @default(TODO)
+  tags        String?    // Store as comma-separated string or JSON
+  stackId     Int?
+  stack       TaskStack? @relation(fields: [stackId], references: [id], onDelete: SetNull)
+  order       Int        @default(0) // For ordering within stack
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Reminder {
@@ -48,6 +61,7 @@ model Reminder {
   dateTime    DateTime
   isRecurring Boolean  @default(false)
   isCompleted Boolean  @default(false)
+  color       String?  @default("#10b981") // Default green
 }
 
 model Subscription {
@@ -80,4 +94,42 @@ model Transaction {
   date        DateTime @default(now())
   accountId   Int?
   account     Account? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+}
+
+model CalendarConnection {
+  id            Int             @id @default(autoincrement())
+  provider      String          // "google" | "apple"
+  email         String
+  accessToken   String          @db.Text
+  refreshToken  String?         @db.Text
+  expiresAt     DateTime
+  nylasGrantId  String          @unique
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  events        CalendarEvent[]
+}
+
+model CalendarEvent {
+  id                Int                  @id @default(autoincrement())
+  nylasEventId      String               @unique
+  sourceType        String               // "task" | "reminder" | "subscription"
+  sourceId          Int
+  connectionId      Int
+  connection        CalendarConnection   @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  lastSyncedAt      DateTime             @updatedAt
+  createdAt         DateTime             @default(now())
+
+  @@index([sourceType, sourceId])
+  @@index([nylasEventId])
+}
+
+model SyncLog {
+  id           Int      @id @default(autoincrement())
+  action       String   // "create" | "update" | "delete" | "webhook"
+  sourceType   String
+  sourceId     Int?
+  nylasEventId String?
+  status       String   // "success" | "failed"
+  error        String?  @db.Text
+  createdAt    DateTime @default(now())
 }

@@ -4,7 +4,8 @@ import { Task, Priority, Status } from '@prisma/client';
 export const taskService = {
     async getAllTasks() {
         return await prisma.task.findMany({
-            orderBy: { createdAt: 'desc' },
+            include: { stack: true },
+            orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
         });
     },
 
@@ -21,9 +22,12 @@ export const taskService = {
         priority?: Priority;
         status?: Status;
         tags?: string;
+        stackId?: number;
+        order?: number;
     }) {
         return await prisma.task.create({
             data,
+            include: { stack: true },
         });
     },
 

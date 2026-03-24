@@ -1,6 +1,26 @@
 version: '3.8'
 
 services:
+  app:
+    container_name: productivity_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3055:3000"
+    environment:
+      # Database - Sử dụng tên service 'mysql' làm host
+      DATABASE_URL: mysql://root:password@mysql:3306/productivity_app
+      # Nylas Configuration
+      NYLAS_CLIENT_ID: ${NYLAS_CLIENT_ID}
+      NYLAS_API_KEY: ${NYLAS_API_KEY}
+      NYLAS_REDIRECT_URI: ${NYLAS_REDIRECT_URI}
+      NYLAS_WEBHOOK_SECRET: ${NYLAS_WEBHOOK_SECRET}
+    depends_on:
+      mysql:
+        condition: service_healthy
+
   mysql:
     image: mysql:8.0
     container_name: productivity_mysql
@@ -12,6 +32,11 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-ppassword" ]
+      timeout: 5s
+      retries: 10
+      interval: 5s
 
 volumes:
   mysql_data:

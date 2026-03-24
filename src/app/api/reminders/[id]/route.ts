@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { reminderService } from '@/services/reminderService';
+import { CalendarSyncService } from '@/services/calendarSync.service';
 import { z } from 'zod';
 
 const updateReminderSchema = z.object({
@@ -23,8 +24,16 @@ export async function PATCH(
         }
 
         const reminder = await reminderService.updateReminder(id, validation.data);
+
+        // Auto-sync to calendar (fire-and-forget)
+        CalendarSyncService.syncEventToNylas({
+            sourceType: 'reminder',
+            sourceId: id,
+            action: 'update',
+        }).catch(err => console.error('Background sync failed:', err));
+
         return NextResponse.json(reminder);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to update reminder' }, { status: 500 });
     }
 }
@@ -35,9 +44,18 @@ export async function DELETE(
 ) {
     try {
         const id = parseInt(params.id);
+
         await reminderService.deleteReminder(id);
+
+        // Sync deletion to calendar (fire-and-forget)
+        CalendarSyncService.syncEventToNylas({
+            sourceType: 'reminder',
+            sourceId: id,
+            action: 'delete',
+        }).catch(err => console.error('Background sync failed:', err));
+
         return NextResponse.json({ success: true });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to delete reminder' }, { status: 500 });
     }
 }

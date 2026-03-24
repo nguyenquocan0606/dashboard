@@ -142,6 +142,30 @@ body {
   border-color: #1e293b;
 }
 
+.dark .rbc-off-range-bg {
+  @apply bg-gray-800/50 !important;
+}
+
+.dark .rbc-today {
+  @apply bg-blue-900/20 !important;
+}
+
 .dark .rbc-off-range .rbc-button-link {
-  color: #1e293b;
+  color: #475569 !important;
+  /* Slate 600 - Visible but dimmed */
+}
+
+/* Ẩn thanh cuộn trên Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ẩn trên Firefox */
+* {
+  scrollbar-width: none;
+}
+
+/* Ẩn trên IE/Edge cũ */
+* {
+  -ms-overflow-style: none;
 }

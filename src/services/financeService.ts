@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { Cycle, TxType, Subscription, Transaction } from '@prisma/client';
+import { Cycle, TxType, Subscription } from '@prisma/client';
 
 export const financeService = {
     // Subscriptions
@@ -99,6 +99,7 @@ export const financeService = {
         });
 
         const categoryMap = new Map<string, number>();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         transactions.forEach((tx: any) => {
             const current = categoryMap.get(tx.category) || 0;
             categoryMap.set(tx.category, current + Number(tx.amount));

@@ -15,7 +15,7 @@ export async function GET() {
     try {
         const subscriptions = await financeService.getSubscriptions();
         return NextResponse.json(subscriptions);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch subscriptions' }, { status: 500 });
     }
 }
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
         const subscription = await financeService.createSubscription(validation.data);
         return NextResponse.json(subscription, { status: 201 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to create subscription' }, { status: 500 });
     }
 }

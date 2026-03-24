@@ -13,7 +13,7 @@ export async function GET() {
     try {
         const accounts = await accountService.getAccountsWithSummary();
         return NextResponse.json(accounts);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch accounts' }, { status: 500 });
     }
 }
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
         const account = await accountService.createAccount(validation.data);
         return NextResponse.json(account, { status: 201 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to create account' }, { status: 500 });
     }
 }

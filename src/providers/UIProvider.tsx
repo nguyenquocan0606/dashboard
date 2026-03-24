@@ -14,12 +14,21 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
+    // Load theme from localStorage on mount
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('theme') as 'light' | 'dark';
+        if (savedTheme) {
+            setTheme(savedTheme);
+        }
+    }, []);
+
     useEffect(() => {
         if (theme === 'dark') {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
         }
+        localStorage.setItem('theme', theme);
     }, [theme]);
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);

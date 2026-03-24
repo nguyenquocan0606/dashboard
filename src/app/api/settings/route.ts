@@ -5,6 +5,7 @@ import { accountService } from '@/services/accountService';
 export async function GET() {
     try {
         const accounts = await accountService.getAccountsWithSummary();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const primaryAccount = accounts.find((acc: any) => acc.isPrimary);
         return NextResponse.json(primaryAccount || null);
     } catch (error) {
@@ -17,6 +18,7 @@ export async function GET() {
 export async function PUT(request: Request) {
     try {
         const { accountId } = await request.json();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const prisma = (await import('@/lib/prisma')).default as any;
 
         // First, unset all accounts as primary
@@ -35,6 +37,7 @@ export async function PUT(request: Request) {
 
         // Return the updated primary account with balance
         const accounts = await accountService.getAccountsWithSummary();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updatedAccount = accounts.find((acc: any) => acc.isPrimary);
 
         return NextResponse.json(updatedAccount || null);

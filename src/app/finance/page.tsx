@@ -3,7 +3,7 @@ import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { format, parse } from 'date-fns';
-import { Plus, TrendingUp, TrendingDown, DollarSign, Trash2, X, CreditCard, Wallet, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Trash2, X, CreditCard, Wallet, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { vi } from 'date-fns/locale';
@@ -28,6 +28,7 @@ export default function FinancePage() {
 
     const [showTxModal, setShowTxModal] = useState(false);
     const [showAccModal, setShowAccModal] = useState(false);
+    const [showAllTransactions, setShowAllTransactions] = useState(false);
 
     const [txForm, setTxForm] = useState({ amount: '', type: 'EXPENSE', category: '', description: '', date: format(new Date(), 'yyyy-MM-dd'), accountId: '' });
     const [accForm, setAccForm] = useState({ name: '', initialBalance: '', color: ACCOUNT_COLORS[0], description: '' });
@@ -169,6 +170,7 @@ export default function FinancePage() {
                         )}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {accounts.map((acc: any) => (
                             <div
                                 key={acc.id}
@@ -245,13 +247,19 @@ export default function FinancePage() {
 
             {/* Recent Transactions - Moved to top */}
             <div className="bg-white rounded-lg shadow overflow-hidden dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                     <h2 className="text-lg font-medium text-gray-900 dark:text-white">
                         {selectedAccountId
-                            ? `Transactions - ${accounts?.find((a: any) => a.id === selectedAccountId)?.name || 'Account'}`
+                            ? `Transactions - ${accounts?.find((a: { id: number; name: string }) => a.id === selectedAccountId)?.name || 'Account'}`
                             : 'Recent Transactions'
                         }
                     </h2>
+                    <button
+                        onClick={() => setShowAllTransactions(!showAllTransactions)}
+                        className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                        {showAllTransactions ? 'Show Less' : 'Show All'}
+                    </button>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -271,7 +279,8 @@ export default function FinancePage() {
                                     <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No transactions found</td>
                                 </tr>
                             ) : (
-                                transactions?.slice(0, 10).map((tx: any) => (
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                transactions?.slice(0, showAllTransactions ? undefined : 10).map((tx: any) => (
                                     <tr
                                         key={tx.id}
                                         className={`${tx.type === 'INCOME'
@@ -334,6 +343,7 @@ export default function FinancePage() {
                                         fill="#8884d8"
                                         dataKey="value"
                                     >
+                                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                         {chartData?.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
@@ -379,7 +389,7 @@ export default function FinancePage() {
                                     <div className="flex items-center">
                                         <CreditCard className="w-5 h-5 mr-2 text-gray-500" />
                                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Tài khoản: {accounts?.find((a: any) => a.id === parseInt(txForm.accountId))?.name}
+                                            Tài khoản: {accounts?.find((a: { id: number; name: string }) => a.id === parseInt(txForm.accountId))?.name}
                                         </span>
                                     </div>
                                     <button
@@ -402,6 +412,7 @@ export default function FinancePage() {
                                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
                                     >
                                         <option value="">Không chọn tài khoản</option>
+                                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                         {accounts?.map((acc: any) => (
                                             <option key={acc.id} value={acc.id}>{acc.name}</option>
                                         ))}
